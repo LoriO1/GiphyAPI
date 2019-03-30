@@ -3,11 +3,10 @@
 
 <head>
     <meta charset="utf-8" />
-    <title>Stop: It's Giphy time</title>
+    <title>Giphy API</title>
 </head>
 
 <body>
-
     <form>
         <div class="form-group">
             <label for="formGroupExampleInput">Add a gif category: </label>
@@ -26,7 +25,6 @@
     <script type="text/javascript">
 
     // function to collect input data onclick
-
     $('#submitBtn').on('click', function (event) {
         event.preventDefault();
         var newSearch = $("input").val();
@@ -38,50 +36,47 @@
         $("#gif-btns").append(gifBtn);
     });
 
+    //function that shows gifs
+    $(document).on("click", ".gifBtn", function () {
+        var gif = $(this).attr('data');
+        var queryURL = "https://api.giphy.com/v1/gifs/search?q=" +
+            gif + "&api_key=dc6zaTOxFJmzC&limit=10";
 
-        //function that shows gifs
-        $(document).on("click", ".gifBtn", function () {
-            var gif = $(this).attr('data');
-            var queryURL = "https://api.giphy.com/v1/gifs/search?q=" +
-                gif + "&api_key=dc6zaTOxFJmzC&limit=10";
-
-            $.ajax({
-                url: queryURL,
-                method: "GET"
-            }).then(function (response) {
-                let data = response.data;
-                console.log('response', data)
-                for (var i = 0; i < data.length; i++) {
-                    var gifImage = $("<img>");
-                    gifImage.attr("src", data[i].images.fixed_height_still.url);
-                    gifImage.attr("data-still", data[i].images.fixed_height_still.url);
-                    gifImage.attr("data-animate", data[i].images.fixed_height.url);
-                    gifImage.attr("data-state", "still");
-                    //gifImage.attr("class", "gif")
-                    gifImage.addClass("gif");
-                    var gifRating = $("<p>");
-                    gifRating.html("rating: " + data[i].rating);
-                    $("#gifs-appear-here").append(gifRating);
-                    $("#gifs-appear-here").append(gifImage);
-
-
-                }
-            })
-        })
-
-
-        //function that plays or pauses gifs 
-        $(document).on("click", ".gif", function () { //special syntax for dynamically created elements
-            var state = $(this).attr("data-state");
-            if (state === "still") {
-                $(this).attr("src", $(this).attr("data-animate"));
-                $(this).attr("data-state", "animate");
-            } else if (state === "animate") {
-                $(this).attr("src", $(this).attr("data-still"));
-                $(this).attr("data-state", "still");
+        $.ajax({
+            url: queryURL,
+            method: "GET"
+        }).then(function (response) {
+            let data = response.data;
+            console.log('response', data)
+            for (var i = 0; i < data.length; i++) {
+                var gifImage = $("<img>");
+                gifImage.attr("src", data[i].images.fixed_height_still.url);
+                gifImage.attr("data-still", data[i].images.fixed_height_still.url);
+                gifImage.attr("data-animate", data[i].images.fixed_height.url);
+                gifImage.attr("data-state", "still");
+                //gifImage.attr("class", "gif")
+                gifImage.addClass("gif");
+                var gifRating = $("<p>");
+                gifRating.html("rating: " + data[i].rating);
+                $("#gifs-appear-here").append(gifRating);
+                $("#gifs-appear-here").append(gifImage);
             }
-        });
-    </script>
-</body>
+        })
+    });
 
+    //function that plays or pauses gifs 
+    $(document).on("click", ".gif", function () { //special syntax for dynamically created elements
+        var state = $(this).attr("data-state");
+        if (state === "still") {
+            $(this).attr("src", $(this).attr("data-animate"));
+            $(this).attr("data-state", "animate");
+        } else if (state === "animate") {
+            $(this).attr("src", $(this).attr("data-still"));
+            $(this).attr("data-state", "still");
+        }
+    });
+    
+    </script>
+
+</body>
 </html>
